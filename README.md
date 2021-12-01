@@ -1,6 +1,6 @@
 # STI-Projet2
 
-# Structure du rapport
+## Structure du rapport
 - Introduction
 - Décrire le système
 - Identifier les sources de menaces
