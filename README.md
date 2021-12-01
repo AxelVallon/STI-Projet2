@@ -18,5 +18,6 @@ Seulement au niveau applicatif (consigne)
 4. Vérifier accès aux ressource
 5. Choix cryptographique, (hash pour mot de passe, crypto pour messagerie ?)
 6. Erreurs logiques
-7. Add more here if needed
+7. Injections XSS ?
+8. Add more here if needed
 
