@@ -1,5 +1,8 @@
-<?php include "include/header.php"?>
-<?php include "include/isConnected.php"?>
+<?php
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+include_once "include/header.php"?>
+
 <body>
 <div class="container mt-3">
     <form method="post" action="messageCreation.php">

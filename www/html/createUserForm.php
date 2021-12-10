@@ -1,8 +1,8 @@
-<?php include "include/header.php"?>
-<?php include "include/isConnected.php";
-if ($_SESSION['est_admin'] != '1'){
-header("Location: messagerie.php");
-} ?>
+<?php
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+AccessControl::adminVerification("message.php?error=403");
+include "include/header.php"?>
 <body>
 <div class="container mt-3">
     <form method="post" action="createUser.php">

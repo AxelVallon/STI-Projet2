@@ -1,11 +1,30 @@
 <?php
-include "include/isConnected.php";
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+AccessControl::adminVerification("message.php?error=403");
 include_once "classes/DB.php";
-if ($_SESSION['est_admin'] != '1'){
-    header("Location: messagerie.php");
-}
+include_once "classes/PasswordControl.php";
+
 $db = new DB();
 $est_valide = isset($_POST['est_valide']) ? '1' : '0';
 $est_admin = isset($_POST['est_admin']) ? '1' : '0';
-$db->updateUser($_POST['old_login_name'], $_POST['login_name'], $_POST['mot_de_passe'], $est_valide, $est_admin);
+
+if (!isset($_POST['login_name'])) {
+    // Could not get the data that should have been sent.
+    header("Location: listUser.php?error=empty_field");
+    return;
+}
+
+if (isset($_POST['mot_de_passe']) && $_POST['mot_de_passe'] != "" && !PasswordControl::isValidPassword($_POST['mot_de_passe'])){
+    header("Location: listUser.php?error=invalid_password");
+    return;
+}
+
+$db = new DB();
+if (isset($_POST['mot_de_passe']) && $_POST['mot_de_passe'] != "") {
+    $db->updateUser($_POST['login_name'], PasswordControl::hashPassword($_POST['mot_de_passe']), $est_valide, $est_admin);
+}
+else {
+    $db->updateUserWithoutPassword($_POST['login_name'], $est_valide, $est_admin);
+}
 header("Location: listUser.php");

@@ -1,4 +1,7 @@
-<?php include "include/header.php"?>
+<?php
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+include_once "include/header.php"?>
 
 <body class="text-center">
 <div class="container mt-3">

@@ -1,10 +1,11 @@
-<?php include "include/header.php";
-include "classes/DB.php";
-include "include/isConnected.php";
+<?php
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+AccessControl::adminVerification("messagerie.php?error=403");
+include_once "include/header.php";
+include_once "classes/DB.php";
 $db = new DB();
-if ($_SESSION['est_admin'] != '1'){
-    header("Location: messagerie.php");
-}
+
 if (isset($_GET['delete_login_name'])){
     $db->deleteUser($_GET['delete_login_name']);
     header("Location: listUser.php");
@@ -19,7 +20,8 @@ $users = $db->getAllUser();
             <thead>
             <tr>
                 <th scope="col">Login</th>
-                <th scope="col">Password</th>
+                <th scope="col">Hached Password</th>
+                <th scope="col">Edit password</th>
                 <th scope="col">Est valide</th>
                 <th scope="col">Est admin</th>
                 <th scope="col"></th>
@@ -31,7 +33,8 @@ $users = $db->getAllUser();
                     <form action="updateUser.php" method="post">
                         <input hidden name="old_login_name" value="<?php echo $user['login_name'] ?>">
                         <td><input value="<?php echo $user['login_name'] ?>" name="login_name" readonly></td>
-                        <td><input value="<?php echo $user['mot_de_passe'] ?>" name="mot_de_passe" required></td>
+                        <td><input value="<?php echo $user['mot_de_passe'] ?>" readonly></td>
+                        <td><input name="mot_de_passe" placeholder="Vide pour ne pas changer"></td>
                         <td>
                             <input class="form-check-input" type="checkbox" name="est_valide" id="flexCheckChecked" <?php echo $user['est_valide'] == '1' ? 'checked' : ''?>>
                         </td>

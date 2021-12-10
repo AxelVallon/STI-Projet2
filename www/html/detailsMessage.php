@@ -1,6 +1,8 @@
-<?php include "include/header.php";
+<?php
+include_once "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+include_once "include/header.php";
 include_once "classes/DB.php";
-include "include/isConnected.php";
 $db = new DB();
 $message = $db->getMessage($_GET['id']);
 ?>

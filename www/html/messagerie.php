@@ -1,6 +1,8 @@
-<?php include "include/header.php";
-include "classes/DB.php";
-include "include/isConnected.php";
+<?php
+include "classes/AccessControl.php";
+AccessControl::connectionVerification("index.php?error=401");
+include_once "include/header.php";
+include_once "classes/DB.php";
 $db = new DB();
 if (isset($_GET['supprID'])){
     $db->deleteMessage($_GET['supprID']);

@@ -13,23 +13,16 @@ class DB {
         $this->file_db = null;
     }
 
-    public function login($login, $password){
+    public function login($login){
         try {
             $this->connect();
             $stmt = $this->file_db->query("SELECT * FROM Compte WHERE login_name ='" . $login . "' AND est_valide ='1'");
             $result = $stmt->fetch();
             $this->disconnect();
-            if (isset($result) && $password == $result['mot_de_passe']) {
-                $_SESSION['est_admin'] = $result['est_admin'];
-                $_SESSION['login_name'] = $login;
-                return true;
-            }
-            else{
-                return false;
-            }
+            return $result;
         } catch(Exception $e){
             $this->disconnect();
-            return false;
+            return null;
         }
     }
 
@@ -123,12 +116,23 @@ class DB {
         }
     }
 
-    public function updateUser($old_login_name, $login_name, $mot_de_passe, $est_valide, $est_admin)
+    public function updateUser($login_name, $mot_de_passe, $est_valide, $est_admin)
     {
         try {
             $this->connect();
-            $this->file_db->exec("UPDATE Compte SET login_name = '$login_name' , mot_de_passe = '$mot_de_passe' , " .
-                 "est_valide = '$est_valide' , est_admin = '$est_admin' WHERE login_name =  '$old_login_name'");
+            $this->file_db->exec("UPDATE Compte SET mot_de_passe = '$mot_de_passe' , " .
+                 "est_valide = '$est_valide' , est_admin = '$est_admin' WHERE login_name =  '$login_name'");
+            $this->disconnect();
+        } catch(Exception $e){
+            $this->disconnect();
+            return null;
+        }
+    }
+    public function updateUserWithoutPassword($login_name, $est_valide, $est_admin)
+    {
+        try {
+            $this->connect();
+            $this->file_db->exec("UPDATE Compte SET est_valide = '$est_valide' , est_admin = '$est_admin' WHERE login_name =  '$login_name'");
             $this->disconnect();
         } catch(Exception $e){
             $this->disconnect();
