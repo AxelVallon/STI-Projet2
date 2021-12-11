@@ -1,4 +1,10 @@
 <?php
+/**
+ * Auteurs  : Noémie Plancherel et Axel Vallon
+ * Date     : 11.12.2021
+ * But      : Affiche les détails d'un message
+ */
+
 include_once "classes/AccessControl.php";
 AccessControl::connectionVerification("index.php?error=401");
 include_once "include/header.php";

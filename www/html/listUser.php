@@ -1,4 +1,11 @@
 <?php
+/**
+ * Auteurs  : Noémie Plancherel et Axel Vallon
+ * Date     : 11.12.2021
+ * But      : Affiche tous les utilisateur du site avec la possibilité de modifier leur mot de passe, leur validité
+ *            et leur rôle.
+ */
+
 include_once "classes/AccessControl.php";
 AccessControl::connectionVerification("index.php?error=401");
 AccessControl::adminVerification("messagerie.php?error=403");
@@ -53,4 +60,15 @@ $users = $db->getAllUser();
     </body>
     <!-- https://github.com/CapitainMorgan/ProjetBDR/blob/main/src/php/vueOffreEmploi.php -->
 <?php
-
+if (isset($_GET['error'])){
+    if ($_GET['error'] == 'invalid_password_format'){
+        echo '<script type="text/JavaScript">
+        alert("Un mot de passe doit respecter les conditions suivantes : \n" +
+            "Doit avoir un minimum de 8 charactère \n" +
+            "Doit avoir au moins un nombre\n" +
+            "Doit avoir au moins une majuscule\n" +
+            "Doit avoir au moins une minuscule\n" +
+            "Doit avoir au moins un charactère spécial (#?!@$%^&*-)")
+    </script>';
+    }
+}

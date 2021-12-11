@@ -1,11 +1,8 @@
 <?php
 class PasswordControl {
-    public static function hashPassword($password, $rounds = 10000)
+    public static function hashPassword($password)
     {
-        // Generate random salt
-        $salt = substr(bin2hex(openssl_random_pseudo_bytes(16)),0,16);
-        // $6$ specifies SHA512
-        return crypt($password, sprintf('$6$rounds=%d$%s$', $rounds, $salt));
+        return password_hash($password, PASSWORD_BCRYPT);
     }
 
     public static function verifyPassword($password, $hashPassword){
@@ -13,6 +10,6 @@ class PasswordControl {
     }
 
     public static function isValidPassword($password){
-        return (preg_match('/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/', $password) == 1);
+        return (preg_match('/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/', $password) == 1);
     }
 }

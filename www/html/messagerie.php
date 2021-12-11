@@ -1,4 +1,10 @@
 <?php
+/**
+ * Auteurs  : Noémie Plancherel et Axel Vallon
+ * Date     : 11.12.2021
+ * But      : Liste les message d'un utilisateur
+ */
+
 include "classes/AccessControl.php";
 AccessControl::connectionVerification("index.php?error=401");
 include_once "include/header.php";
@@ -41,6 +47,13 @@ $messages = $db->getAllMessage($_SESSION['login_name']);
 </table>
 </div>
 </body>
-    <!-- https://github.com/CapitainMorgan/ProjetBDR/blob/main/src/php/vueOffreEmploi.php -->
 <?php
+if (isset($_GET['error'])) {
+    if ($_GET['error'] == '403') {
+        echo '<script type="text/JavaScript"> 
+                alert("Vous n\'avez pas les authorisations nécessaire pour accéder à cette ressource\n" +
+                "Veuillez demander des droits supplémentaires à l\'administrateur de ce site")
+            </script>';
+    }
+}
 

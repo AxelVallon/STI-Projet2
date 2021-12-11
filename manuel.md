@@ -12,7 +12,7 @@ Les fonctionnalités ce ce site sont accordées au cahier des charges qui nous a
 
 ### Page de connexion
 
-Pour vous connecter, il suffit de rentrer vos identifiants demandés. Par défaut, il existe un compte administrateur `root` ayant pour mot de passe `root` et un utilisateur collaborateur `user` ayant pour mot de passe `user`.
+Pour vous connecter, il suffit de rentrer vos identifiants demandés. Par défaut, il existe un compte administrateur `admin` ayant pour mot de passe `Admin$2021` et un utilisateur collaborateur `user` ayant pour mot de passe `User$2021`.
 
 ![image-20211012103104447](figures/image-20211012103104447.png)
 
