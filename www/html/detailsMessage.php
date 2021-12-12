@@ -40,7 +40,7 @@ CSRF::updateToken();
         <textarea readonly class="form-control" id="exampleFormControlTextarea1" rows="5"><?php echo XSS::textSanitizer($message['corps'])?></textarea>
     </div>
     <a class="btn btn-success" href="answerMessage.php?login=<?php echo XSS::textSanitizer($message['login_name_expediteur'])
-        . '&sujet=' . XSS::textSanitizer($message['sujet']) ?>" role="button">Répondre</a>
+        . '&sujet=' . XSS::textSanitizer($message['sujet']) ?>" role="button">Répondre</a><br>
     <form method="post" action="messagerie.php?supprID=<?php echo XSS::textSanitizer($message['id'])?>">
         <?php CSRF::insertHiddenInput() ?>
         <button class="btn btn-warning" type="submit" role="button">Supprimer</button>
