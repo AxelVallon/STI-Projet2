@@ -9,11 +9,13 @@ session_start();
 include_once "classes/DB.php";
 include_once "classes/PasswordControl.php";
 include_once "classes/CSRF.php";
+
+// security : verification du token envoyé depuis le formulaire associé
 CSRF::verification($_POST['token']);
 
 $db = new DB();
 $result = $db->login($_POST['inputLogin']);
-//if the result is empty, we want to process password comparison to have approximately the same execution time
+// security : if the result is empty, we want to process password comparison to have approximately the same execution time
 // to avoid timing attack
 if (!isset($result)){
     $result['mot_de_passe'] = "randomHashInvalid";

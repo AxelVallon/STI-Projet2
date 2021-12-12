@@ -7,9 +7,14 @@
 
 include_once "classes/AccessControl.php";
 include_once "classes/CSRF.php";
-AccessControl::connectionVerification("index.php?error=401");
-include_once "include/header.php";
+
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
+
+include_once "include/header.php";
+
 ?>
 
 <body class="text-center">
@@ -29,7 +34,7 @@ CSRF::updateToken();
 </form>
 </div>
 </body>
-</html>
+
 <?php
 if (isset($_GET['error'])){
     if ($_GET['error'] == 'different_password'){

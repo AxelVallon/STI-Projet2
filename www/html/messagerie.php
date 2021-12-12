@@ -8,15 +8,20 @@
 include_once "classes/CSRF.php";
 include_once "classes/AccessControl.php";
 include_once "classes/XSS.php";
-AccessControl::connectionVerification("index.php?error=401");
-include_once "include/header.php";
 include_once "classes/DB.php";
+
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
+
+include_once "include/header.php";
+
 $db = new DB();
 if (isset($_GET['supprID'])){
     CSRF::verification($_POST['token']);
     $db->deleteMessage($_GET['supprID']);
     header("Location: messagerie.php");
 }
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
 $messages = $db->getAllMessage($_SESSION['login_name']);
 ?>
@@ -34,7 +39,11 @@ $messages = $db->getAllMessage($_SESSION['login_name']);
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($messages as $message){ ?>
+
+    <?php
+    // affiche tous les messages reçu pour l'utilisateur connecté
+    foreach ($messages as $message){
+        ?>
         <tr>
             <td><?php echo XSS::textSanitizer($message['login_name_expediteur']) ?></td>
             <td><?php echo XSS::textSanitizer($message['date_reception']) ?></td>

@@ -9,19 +9,24 @@
 include_once "classes/AccessControl.php";
 include_once "classes/CSRF.php";
 include_once "classes/XSS.php";
-AccessControl::connectionVerification("index.php?error=401");
+include_once "classes/DB.php";
+
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
 AccessControl::adminVerification("messagerie.php?error=403");
 
-include_once "classes/DB.php";
 $db = new DB();
 
 if (isset($_GET['delete_login_name'])){
+    // security : verification du token envoyé depuis le formulaire associé
     CSRF::verification($_POST['token']);
     $db->deleteUser($_GET['delete_login_name']);
     header("Location: listUser.php");
 }
 
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
+
 include_once "include/header.php";
 
 $users = $db->getAllUser();

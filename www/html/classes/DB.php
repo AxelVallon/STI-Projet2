@@ -1,7 +1,14 @@
 <?php
+/**
+ * Auteurs  : Noémie Plancherel et Axel Vallon
+ * Date     : 11.12.2021
+ * But      : Accès à la base donnée et méthode utilisée sur le site
+ */
+
 date_default_timezone_set('UTC');
 session_start();
 
+// security : ajout de "prepare" à chaque requête pour éviter les injections SQL.
 class DB {
     private $pdo;
     public function __construct()

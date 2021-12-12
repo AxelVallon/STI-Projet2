@@ -7,9 +7,13 @@
 
 include_once "classes/AccessControl.php";
 include_once "classes/CSRF.php";
-AccessControl::connectionVerification("index.php?error=401");
+
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
 AccessControl::adminVerification("message.php?error=403");
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
+
 include "include/header.php"?>
 <body>
 <div class="container mt-3">

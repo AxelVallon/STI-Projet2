@@ -6,6 +6,7 @@
  */
 
 include_once "classes/CSRF.php";
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
 ?>
 <!DOCTYPE html>

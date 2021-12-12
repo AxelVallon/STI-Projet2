@@ -8,11 +8,16 @@
 include_once "classes/AccessControl.php";
 include_once "classes/CSRF.php";
 include_once "classes/XSS.php";
-AccessControl::connectionVerification("index.php?error=401");
-include_once "include/header.php";
 include_once "classes/DB.php";
+
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
+
+include_once "include/header.php";
+
 $db = new DB();
 $message = $db->getMessage($_GET['id']);
+// security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
 ?>
 <body>
@@ -38,7 +43,7 @@ CSRF::updateToken();
         . '&sujet=' . XSS::textSanitizer($message['sujet']) ?>" role="button">Répondre</a>
     <form method="post" action="messagerie.php?supprID=<?php echo XSS::textSanitizer($message['id'])?>">
         <?php CSRF::insertHiddenInput() ?>
-        <button class="btn btn-warning" type="submit" href= role="button">Supprimer</button>
+        <button class="btn btn-warning" type="submit" role="button">Supprimer</button>
     </form>
 </div>
 </body>

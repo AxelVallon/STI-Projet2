@@ -7,30 +7,33 @@
 
 include_once "classes/AccessControl.php";
 include_once "classes/CSRF.php";
-AccessControl::connectionVerification("index.php?error=401");
-CSRF::verification($_POST['token']);
 include_once "classes/DB.php";
 include_once "classes/PasswordControl.php";
 
+// security : verification of authentication and authorization
+AccessControl::authentificationVerification("index.php?error=401");
+// security : verification du token envoyé depuis le formulaire associé
+CSRF::verification($_POST['token']);
+
+// security : les inputs doivent être saisis
 if (!isset($_POST['inputPassword1']) || !isset($_POST['inputPassword2'])) {
-    // Could not get the data that should have been sent.
-    header("Location: myProfile.php?error=empty_field");
-    return;
+    die("Merci d'utiliser l'interface web de ce site");
 }
 
+// security : le mot de passe doit être valide (Regex)
 if (!PasswordControl::isValidPassword($_POST['inputPassword1'])){
     header("Location: myProfile.php?error=invalid_password_format");
     return;
 }
 
+// les mots de passes doivent être les même
 if ($_POST['inputPassword1'] != $_POST['inputPassword2']) {
     header("Location: myProfile.php?error=different_password");
     return;
 }
 
-//TODO sanitazer le premier mot de passe
 $mot_de_passe = $_POST['inputPassword1'];
 
 $db = new DB();
-$result = $db->updatePassword($_SESSION['login_name'], PasswordControl::hashPassword($mot_de_passe));
+$db->updatePassword($_SESSION['login_name'], PasswordControl::hashPassword($mot_de_passe));
 header("Location: messagerie.php");
