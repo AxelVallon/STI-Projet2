@@ -8,6 +8,8 @@
 session_start();
 include_once "classes/DB.php";
 include_once "classes/PasswordControl.php";
+include_once "classes/CSRF.php";
+CSRF::verification($_POST['token']);
 
 $db = new DB();
 $result = $db->login($_POST['inputLogin']);

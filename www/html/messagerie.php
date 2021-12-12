@@ -5,15 +5,19 @@
  * But      : Liste les message d'un utilisateur
  */
 
-include "classes/AccessControl.php";
+include_once "classes/CSRF.php";
+include_once "classes/AccessControl.php";
+include_once "classes/XSS.php";
 AccessControl::connectionVerification("index.php?error=401");
 include_once "include/header.php";
 include_once "classes/DB.php";
 $db = new DB();
 if (isset($_GET['supprID'])){
+    CSRF::verification($_POST['token']);
     $db->deleteMessage($_GET['supprID']);
     header("Location: messagerie.php");
 }
+CSRF::updateToken();
 $messages = $db->getAllMessage($_SESSION['login_name']);
 ?>
 
@@ -32,14 +36,18 @@ $messages = $db->getAllMessage($_SESSION['login_name']);
     <tbody>
     <?php foreach ($messages as $message){ ?>
         <tr>
-            <td><?php echo $message['login_name_expediteur'] ?></td>
-            <td><?php echo $message['date_reception'] ?></td>
-            <td><?php echo $message['sujet'] ?></td>
+            <td><?php echo XSS::textSanitizer($message['login_name_expediteur']) ?></td>
+            <td><?php echo XSS::textSanitizer($message['date_reception']) ?></td>
+            <td><?php echo XSS::textSanitizer($message['sujet']) ?></td>
             <td>
-                <a class="btn btn-success" href="answerMessage.php?login=<?php echo $message['login_name_expediteur']
-                    . '&sujet=' . $message['sujet'] ?>" role="button">Répondre</a>
-                <a class="btn btn-info" href="detailsMessage.php?id=<?php echo $message['id']?>" role="button">Détails</a>
-                <a class="btn btn-warning" type="submit" href="messagerie.php?supprID=<?php echo $message['id']?>" role="button">Supprimer</a>
+                <form method="post" action="messagerie.php?supprID=<?php echo XSS::textSanitizer($message['id'])?>">
+                <a class="btn btn-success" href="answerMessage.php?login=<?php echo XSS::textSanitizer($message['login_name_expediteur'])
+                    . '&sujet=' . XSS::textSanitizer($message['sujet']) ?>" role="button">Répondre</a>
+                <a class="btn btn-info" href="detailsMessage.php?id=<?php echo XSS::textSanitizer($message['id'])?>" role="button">Détails</a>
+
+                    <?php CSRF::insertHiddenInput() ?>
+                    <button class="btn btn-warning" type="submit" role="button">Supprimer</button>
+                </form>
             </td>
         </tr>
     <?php } ?>

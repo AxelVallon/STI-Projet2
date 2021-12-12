@@ -6,7 +6,9 @@
  */
 
 include_once "classes/AccessControl.php";
+include_once "classes/CSRF.php";
 AccessControl::connectionVerification("index.php?error=401");
+CSRF::verification($_POST['token']);
 include_once "classes/DB.php";
 include_once "classes/PasswordControl.php";
 

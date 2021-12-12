@@ -4,6 +4,9 @@
  * Date     : 11.12.2021
  * But      : Page de login
  */
+
+include_once "classes/CSRF.php";
+CSRF::updateToken();
 ?>
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -20,6 +23,7 @@
 </head>
 <body class="text-center">
     <form class="form-signin" action="verificationLogin.php" method="post">
+        <?php CSRF::insertHiddenInput() ?>
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         <label for="inputLogin" class="sr-only">Login</label>
         <input name="inputLogin" type="text" id="inputLogin" class="form-control" placeholder="Login" required autofocus>

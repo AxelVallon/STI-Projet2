@@ -6,17 +6,22 @@
  */
 
 include_once "classes/AccessControl.php";
+include_once "classes/CSRF.php";
 AccessControl::connectionVerification("index.php?error=401");
 AccessControl::adminVerification("message.php?error=403");
+CSRF::updateToken();
 include "include/header.php"?>
 <body>
 <div class="container mt-3">
     <form method="post" action="createUser.php">
+        <?php CSRF::insertHiddenInput() ?>
         <br><h2>Créer un utilisateur</h2><br>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Nom d'utilisateur</span>
-            <input type="text" class="form-control" name="login_name" aria-label="Username" placeholder="Username" required aria-describedby="basic-addon1">
+            <input type="text" class="form-control" name="login_name" aria-label="Username" placeholder="Username"
+                   required aria-describedby="basic-addon1">
         </div>
+        <label class=form-control" style="color: red" id="error"></label><br>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon1">Mot de passe</span>
             <input type="password" id="inputPassword" name="mot_de_passe" class="form-control" placeholder="Password" required>
@@ -42,6 +47,13 @@ include "include/header.php"?>
 </body>
 <?php
 if (isset($_GET['error'])){
+    if ($_GET['error'] == 'user_already_exist'){
+        echo '<script type="text/JavaScript"> 
+                const error = document.getElementById("error");
+                // Changing content and color of content
+                error.innerText = "Cet utilisateur existe déjà. Veuillez en choisir un autre."
+            </script>';
+    }
     if ($_GET['error'] == 'invalid_password_format'){
     echo '<script type="text/JavaScript">
         alert("Un mot de passe doit respecter les conditions suivantes : \n" +

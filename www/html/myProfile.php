@@ -6,13 +6,17 @@
  */
 
 include_once "classes/AccessControl.php";
+include_once "classes/CSRF.php";
 AccessControl::connectionVerification("index.php?error=401");
-include_once "include/header.php"?>
+include_once "include/header.php";
+CSRF::updateToken();
+?>
 
 <body class="text-center">
 <div class="container mt-3">
 
 <form action="modifyPassword.php" method="post">
+    <?php CSRF::insertHiddenInput() ?>
     <h1 class="h3 mb-3 font-weight-normal">Modification du mot de passe</h1>
     <label for="inputLogin" class="sr-only">Mot de passe</label>
     <input type="password" id="inputPassword" name="inputPassword1" class="form-control" placeholder="Password" required>
