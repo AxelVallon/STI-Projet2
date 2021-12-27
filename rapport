@@ -1,0 +1,278 @@
+\documentclass[a4paper,10pt]{article}
+%\documentclass[a4paper,10pt]{scrartcl}
+\usepackage[left=2cm,right=2cm,top=3cm,bottom=2.5cm,headheight=1.5cm]{geometry}
+\usepackage[french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{enumitem,xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+
+\title{STI_Projet2_Plancherel_Vallon_rapport}
+\author{Plancherel Noemie & Vallon Axel}
+\date{27.12.2021}
+\setlength\parindent{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Noémie Plancherel \& Axel Vallon}
+\lhead{STI 2021}
+\rfoot{\center \thepage}
+\graphicspath{ {./figures/} }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,     
+    tabsize=2
+}
+
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+\renewcommand{\labelitemi}{\textcolor{black}{\textbullet}}
+
+    \begin{titlepage}
+    \begin{center}
+        \vspace*{6cm}
+
+        \textbf{\Large STI 2021 - Étude de menaces}
+
+        \vspace{0.5cm}
+            \Large Projet 2 - Application de messagerie sécurisée
+                
+        \vspace{0.5cm}
+            \normalsize 20 janvier 2021
+                
+        \vspace{8cm}
+        
+        \Large Noémie Plancherel \& Axel Vallon
+                
+    \end{center}
+    \end{titlepage}
+    
+    \section*{Introduction}
+    Lors de la première phase du cours STI, pour le projet 1, nous avons dû implémenter une application de messagerie web simple sans aspect sécuritaire. Le but de ce second projet est de reprendre le projet 1 et d'effectuer dans un premier temps une analyse de menaces complètes. En second temps, nous apporterons les aspects sécuritaires manquant à l'application.\\
+
+    Le rapport est structuré en 4 parties distinctes; nous décrirons premièrement le système déjà existant et nous identifierons ces biens, c'est-à-dire les éléments que l'on cherche à protéger. Deuxièmement, nous définirons les sources de menaces de notre application de messagerie. Ensuite, nous établisserons différents scénarios d'attaques en les décrivant au mieux possible. Nous nous aiderons du modèle STRIDE pour le faire. Finalement, nous présenterons les contre-mesures effectuées. 
+    \section*{Description du système}
+    \subsection*{Objectifs du système}
+    Pour rappel, l’objectif principal de cette application Web consiste en une messagerie avec des utilisateurs connectés. Il est possible de s’y connecter pour rédiger, répondre ainsi que de visualiser des messages. 
+    Ainsi, il existe deux rôles différents, collaborateur et administrateur. Le rôle administrateur a accès à des fonctionnalités en plus; il peut gérer les utilisateurs de la messagerie (ajout, modification, suppression).
+    Le but étant de garantir la confidentialité des messages échangés ainsi qu’une haute disponibilité du système afin d’avoir une bonne réputation et fiabilité auprès des utilisateurs.
+
+    \subsection*{Hypothèses de sécurité}
+    On peut émettre deux hypothèses différentes concernant la sécurité: 
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item Serveur Web de confiance
+    \item Réseau interne et administrateurs de confiance
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Exigences du système}
+    Nous allons lister les exigences de sécurité du système: 
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item \textbf{Contrôle d’accès}: le contenu administratif ne doit seulement être accessible aux administrateurs
+    \item \textbf{Contrôle d’accès}: l’utilisateur doit avoir un compte actif pour accéder à la messagerie
+    \item \textbf{Authentification}: un message doit être rédigé ou lu par un utilisateur connecté
+    \item \textbf{Information fiable}: le contenu doit être protégé en intégrité, non modifiable
+    \item \textbf{Confidentialité}: un message doit être uniquement lu par son auteur et destinataire.s
+    \item \textbf{Unicité}: le nom d'utilisateur doit être unique
+    \item \textbf{Disponibilité}: le site Web doit être disponible à 99\% du temps
+    \item \textbf{Privacy}: les informations des utilisateurs doivent être protégées
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Éléments du système}
+    Nous pouvons retrouver les éléments suivants dans notre système: 
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item Base de données des utilisateurs (\textit{avec username, mot de passe, validité du compte et rôle})
+    \item Base de données des messages (\textit{avec id, date, auteur, destinataire, sujet et message})
+    \item Application Web
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Rôles des utilisateurs}
+    Comme précisé précédemment, il existe deux rôles différents au sein de l’application:
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item \textbf{Collaborateur} qui a la possibilité de
+    \subitem-- Rédiger un message
+    \subitem-- Répondre à un message
+    \subitem-- Consulter sa messagerie
+    \subitem-- Modifier et supprimer un message
+    \subitem-- Modifier son mot de passe
+    \item \textbf{Administrateur} qui a la possibilité de
+    \subitem-- Effectuer les mêmes fonctionnalités qu’un collaborateur
+    \subitem-- Gérer un utilisateur (ajout, modification, suppression)  \\
+    \end{itemize}
+    \end{onehalfspacing}
+    On peut ajouter deux rôles supplémentaires qui pourraient interagir avec le système:
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item \textbf{Administrateur du système/réseau} qui n’est pas directement inclu dans le système
+    \item \textbf{Visiteur anonyme} qui n’a pas la possibilité d’accéder à la messagerie mais il peut se connecter ou créer un compte
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Actifs à haute valeur}
+    \begin{onehalfspacing}
+    \begin{itemize}
+    \item \textbf{Base de données des utilisateurs} (données)
+    \subitem-- Confidentialité, sphère privée
+    \subitem-- Un incident pourrait nuire à la réputation du site
+    \item \textbf{Base de données des messages} (données)
+    \subitem-- Confidentialité, sphère privée (uniquement utilisateurs concernés peuvent consulter le message)
+    \subitem-- Intégrité (message non modifiable une fois envoyé)
+    \subitem-- Un incident pourrait nuire à la réputation du site
+    \item \textbf{Infrastructure}
+    \subitem-- Intégrité, disponibilité
+    \subitem-- \parbox[t]{\linewidth}{Un incident pourrait être critique et nuire à la réputation, disponibilité ainsi qu’à la crédibilité du site Web}
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{DFD}
+    Afin de bien comprendre les interactions entre les différents rôles du système, nous avons dessiné un DFD (Data Flow Diagram). Les flèches rouges représentent l’interaction avec les utilisateurs externes, les flèches vertes l’interaction avec la partie administration du système et quant au flèches jaunes, elles représentent les interactions du système.
+    \begin{figure}[H]
+    \includegraphics[scale=0.4]{DFD.png}
+    \centering
+    \end{figure}
+    \subsection*{Périmètre de sécurisation}
+    La sécurisation de l’application de messagerie se concentrera uniquement à l’applicatif. Ce qui concerne la sécurisation du serveur web (apache, https, …) ou la sécurisation de la machine (os, vm) est exclu du périmètre. 
+    \section*{Sources de menaces}
+    Nous allons définir quelques types de menaces possibles. Pour chaque cas, nous allons préciser les motivations, les cibles ainsi que la potentialité de la menace. Les cibles potentielles sont l’application Web de messagerie ainsi que la base de données avec tous les utilisateurs et tous les messages.
+    \subsection*{Hackers, script-kiddies}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item \textbf{Motivation}: s’amuser, gagner la gloire
+     \item \textbf{Cible}: application web, comptes utilisateurs, messages
+     \item \textbf{Potentialité}: haute
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Cybercrime (spam, maliciels}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item \textbf{Motivation}: financières (rançons ou revente de données)
+     \item \textbf{Cible}: vol de credentials des utilisateurs, modification d’informations, récupération des messages
+     \item \textbf{Potentialité}: moyenne
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Employés / Utilisateurs malins}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item \textbf{Motivation}: accès au compte administrateur
+     \item \textbf{Cible}: gestion des utilisateurs (ajout, suppression, modification)
+     \item \textbf{Potentialité}: moyenne
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Concurrents}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item \textbf{Motivation}: espionnage industriel
+     \item \textbf{Cible}: récupération des messages des utilisateurs
+     \item \textbf{Potentialité}: moyenne
+    \end{itemize}
+    \end{onehalfspacing}
+    \section*{Scénario d'attaques}
+    \subsection*{Scénario de menace 1: Deviner des mots de passe}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Hacker, Cybercrime, Employé, Concurrent
+        \paragraph{Motivation} Pour les hackers, l'attaque peut être vue comme un amusement ou un défi personnel. Pour les concurrents ou un cybercrime, le but premier serait d’avoir accès à l’application de messagerie. Pour un employé, ce serait de se faire passer pour quelqu’un d’autre de l’entreprise, de lire les messages ou d’utiliser des fonctionnalités d’administrateur
+        \paragraph{Actif ciblé} Utilisateurs (credentials)
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 2: Vol de base de données (injection SQL)}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Hacker, Cybercrime, Concurrent
+        \paragraph{Motivation} La motivation principale de la récupération de données, sensibles ou non, de la base de données, est financière
+        \paragraph{Actif ciblé} Base de données des utilisateurs et des messages
+        \paragraph{Scénario d'attaque} Étant donné que la base de données n’est pas directement retournée au formulaire, car il permet uniquement la vérification de l’authentification, on peut utiliser l’outil sqlmap qui permet d’effectuer des injections SQL. Il permet d’identifier puis exploiter une injection SQL sur des applications web. \\
+        
+        On peut premièrement vérifier sur le code source de la page web, quels sont les champs du formulaire qui sont envoyés en POST et depuis quelle page. Une fois cela vérifié, on exécute l’outil \verb|sqlmap| avec les paramètres suivants:
+        
+        \begin{onehalfspacing}
+        \begin{itemize}
+        \item \verb|--url|: URL cible pour tester les injections
+        \item \verb|--data|: données qui doivent être envoyées dans la requête POST
+        \item \verb|--dbms|:  précise le type de base de données utilisée
+        \item \verb|--risk|: différents risques d’attaques. Ci-dessous le risque 3 effectue des attaques lourdes
+        \item \verb|--level|: différents niveaux d’attaques. Ci-dessous le niveau 5 effectue des attaques lourdes
+        \item \verb|--dump-all|: extraire les données de la DB \\
+        \end{itemize}
+        \end{onehalfspacing}
+        En exécutant la commande suivante, il est possible de récupérer toutes les données de la base de données de l'application web.
+        \begin{lstlisting}[language=bash]
+python2 sqlmap.py --url=http://localhost:8080/verificationLogin.php --data="inputLogin=111&inputPassword=222" --dbms=SQLite --risk=3 --level=5 --dump-all
+\end{lstlisting}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 3: Bruteforce de mots de passe}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Hacker, Cybercrime, Employé, Concurrent
+        \paragraph{Motivation}  Pour les hackers, l'attaque peut être vue comme un amusement ou un défi personnel. Pour les concurrents ou un cybercrime, le but premier serait d’avoir accès à l’application de messagerie. Pour un employé, ce serait de se faire passer pour quelqu’un d’autre de l’entreprise, de lire les messages ou d’utiliser des fonctionnalités d’administrateur
+        \paragraph{Actif ciblé}
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 4: Vol de mots de passe (interception)}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Employé (ou quelqu’un qui aurait accès au réseau interne de l’entreprise)
+        \paragraph{Motivation} Le but peut être de se faire passer pour quelqu’un d’autre de l’entreprise, de lire de les messages ou d’utiliser les fonctionnalités d’administrateur
+        \paragraph{Actif ciblé} Utilisateurs (credentials)
+        \paragraph{Scénario d'attaque} On peut effectuer l’attaque en utilisant un sniffer de réseau comme Wireshark. Si le protocole utilisé est HTTP, les identifiants de l’utilisateur sont envoyés en clair et il est possible de capturer la trame.
+        \begin{figure}[H]
+        \includegraphics[scale=0.3]{scenario4_1.png}
+        \centering
+        \end{figure}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 5: Vol de session}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Hackers, Concurrent, Employé (avec des compétences avancées)
+        \paragraph{Motivation}
+        \paragraph{Actif ciblé} Utilisateurs, Administrateur
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 6: Denial Of Service (DOS)}
+        \paragraph{Impact sur l'entreprise} Moyen à haut (indisponibilité du service de messagerie)
+        \paragraph{Source de menace} Hackers, Concurrent, Employé (avec des compétences avancées)
+        \paragraph{Motivation}
+        \paragraph{Actif ciblé} Système entier
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 7: Suppression des utilisateurs (XSS)}
+        \paragraph{Impact sur l'entreprise} Moyen
+        \paragraph{Source de menace} Hacker, Concurrent, Employé (avec des compétences avancées)
+        \paragraph{Motivation}
+        \paragraph{Actif ciblé} Utilisateurs
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 8: Modification d’un rôle d’un utilisateur (CSRF)}
+        \paragraph{Impact sur l'entreprise} 
+        \paragraph{Source de menace} Hacker, Concurrent, Employé (avec des compétences avancées)
+        \paragraph{Motivation}
+        \paragraph{Actif ciblé}
+        \paragraph{Scénario d'attaque}
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 9: Phishing}
+    \subsection*{STRIDE}
+        
+    \section*{Contre-mesures}    
+
+
+\end{document}
