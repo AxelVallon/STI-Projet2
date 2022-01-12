@@ -17,6 +17,11 @@ include_once "include/header.php";
 
 $db = new DB();
 $message = $db->getMessage($_GET['id']);
+// security : il ne doit pas être possible de voir les messages reçu des autres utilisateurs
+if ($message['login_name_destinataire'] != $_SESSION['login_name']){
+    die("Vous ne pouvez pas affichez un message dont vous n'êtes pas les destinaire");
+}
+
 // security : reset du token dans la session pour le formulaire qui pourrait être envoyé
 CSRF::updateToken();
 ?>

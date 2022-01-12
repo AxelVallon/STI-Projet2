@@ -18,6 +18,10 @@ include_once "include/header.php";
 $db = new DB();
 if (isset($_GET['supprID'])){
     CSRF::verification($_POST['token']);
+    // il ne doit pas être possible de supprimer les messages qu'un autre utilisateur a reçu
+    if ($db->getMessage($_GET['supprID'])['login_name_destinataire'] != $_SESSION['login_name']){
+        die("Vous ne pouvez pas supprimer un message qui ne vous appartient pas");
+    }
     $db->deleteMessage($_GET['supprID']);
     header("Location: messagerie.php");
 }

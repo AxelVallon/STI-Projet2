@@ -19,43 +19,21 @@ Seulement au niveau applicatif (consigne)
 5. Erreurs logiques 3h **Axel**
 7. Add more here if needed
 
-## Menaces et sénarios d'attaque
-
-//TODO, trouver bout de code à montrer
-
-### Authentification
-
-Plusieurs problème lié à l'authentification ont pu être identifié tel que : 
-
-- Mots de passe circulant en clair
-- Politique de mot de passe faible
-
-Les sénarios d'attaque pour chacune de ces vulnérabilités sont les suivantes : 
-
-- **Man in the middle.** Il est possible pour n'importe quel attaquant de récupérer le mot de passe pendant une authentification ou lors d'une création de compte si ils ont la possibilité de visualiser le traffic.
-- **Brute-force** En aillant aucune politique de mot de passe, et aucun hachage, il est possible d'effectuer du brute-force sur l'api de connexion sans aucune limitation de vitesse (sauf celle du réseau) et il a de grande chance que les utilisateurs utilisent des mots de passe faible.
-- **Dump de la base de donnée** Si un attaquant arrive à accéder à la base de donnée, il aura accès à tous les mot de passe du site.
-- Il y en a plus, à voir.
-
-### Accès aux ressources
-
-Il a été identifié sur plusieurs page que les accès étaient bloqué pour le formulaire, mais il ne l'étaient pas lors de la vérification du formulaire. Donc il est possible de forger des requêtes sans passer par le processus d'authentification
-
 ## Contre-Mesure
 
 ### Authentification
 
-Nous avons améliorer l'authentification du site avec un hashage de type b_crypt. Lors de la création d'un compte, le mot de passe sera hâché lors de la vérification de la validé de celui-ci. Ensuite, quand cet utilisateur souhaitera s'authentifier, son mot de passe sera hâché à nouveau pour comparer le résultat.
+Nous avons amélioré l'authentification du site avec l'algorithme de hachage `b_crypt`. Lors de la création d'un compte, le mot de passe sera haché lors de la vérification de la validé de celui-ci. Ensuite, quand cet utilisateur souhaitera s'authentifier, let mot de passe entré sera haché à nouveau, puis les deux seront comparés.
 
 #### B-Crypt
 
-Nous avons séléctionner cet algorithme pour la bonne raison qu'il est lent. Lors d'une attaque de brute-force, il faudra donc plus de temps pour essayer plusieurs combinaisons. 
+Nous avons séléctionné cet algorithme pour la bonne raison qu'il est lent. Lors d'une attaque de brute-force, il faudra donc plus de temps pour essayer plusieurs combinaisons. De plus, il s'agit de l'algorithme recommandé par PHP.
 
 #### Validité d'un mot de passe
 
 Un mot de passe doit respecter les conditions suivantes
 
-- Doit avoir un minimum de 8 charactère
+- Doit avoir un minimum de 8 charactères
 - Doit avoir au moins un nombre
 - Doit avoir au moins une majuscule
 - Doit avoir au moins une minuscule
@@ -74,3 +52,41 @@ AccessControl::adminVerification("messagerie.php?error=403"); //vérification de
 ```
 
 Il est donc facile de vérifier sur le début de chaque fichier que tout est bien mis en place.
+
+De plus, nous avons rajouté dans `messagerie.php` et dans `detailsMessage.php` des conditions supplémentaire évitant un utilisateur malveillant de voir ou supprimer des message destiné à quelqu'un d'autre.
+
+### Injection de script (XSS)
+
+Afin d'éviter qu'un utilisateur puisse injecter un script malveillant, il a fallu mettre en place une protection. Cette protection est très simple à mettre en place, et il suffit d'encoder à l'affichage tout ce qui pourrait venir d'un utilisateur. Afin de faire cela, nous avons simplement appelé la méthode `htmlspecialchars()` qui va convertir les caractères qui permettent un script malveillant d'être exécuté.
+
+```php
+return htmlspecialchars($content, ENT_QUOTES, "UTF-8");
+```
+
+Ceci va effectuer les remplacements de caractères comme si-dessous, afin qu'ils ne soient plus interprété comme du code exécutable.
+
+| Caractère               | Remplacement |
+| :---------------------- | :----------- |
+| `&` (ET commercial)     | `&amp;`      |
+| `"` (double guillement) | `&quot;`     |
+| `'` (simple guillemet)  | `&#039;`     |
+| `<` (inférieur à)       | `&lt;`       |
+| `>` (supérieur à)       | `&gt;`       |
+
+https://www.php.net/manual/fr/function.htmlspecialchars.php
+
+Nous n'avons pas modifier les entrées utilisateurs pour deux raisons : 
+
+- La première est qu'en cas de modification dans la source de donnée, cette protection ne servirait à rien
+- La deuxième est que cela modifierait les données entrées pas l'utilisateur. Exemple : si un utilisateur crée un mot de passe avec le caractère `>`, alors celui-ci ne doit pas être changé en `&gt;`. Cela ne changerait rien à l'utilisateur, mais pourrait être contre productif en cas d'analyse des données, ou autres.
+
+### CSRF
+
+Afin d'empêcher le genre d'attaque pour forcer une action à un utilisateur, la solution qui a été mise en place a été l'utilisation d'un token anti-CSRF. 
+
+La solution définie est que lors de chaque visite d'une page contenant un formulaire, un token CSRF sera géré du côté du serveur, envoyée au client, puis pour finir inclus et caché dans le formulaire que l'utilisateur peut envoyer. Si cet utilisateur envoie ce formulaire, alors le token sera lui-même inclus et sera vérifié lors de la vérification des données reçues par le serveur.
+
+Le token est généré lors de chaque visite sur un formulaire, afin que lors de chaque envoie de formulaire, afin que le token précédent ne soit plus valide. 
+
+
+
