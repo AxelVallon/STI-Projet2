@@ -238,7 +238,7 @@
         Finalement, pour la dernière attaque, on peut deviner les mots de passe d'un utilisateur qu'on pourrait connaître personnellement. Dans ce cas, on peut tester sa date de naissance, son prénom, sa ville d'habitation, ses animaux, etc...
         \paragraph{Contre-mesures} Nous constatons que dans la situation actuelle, lorsqu'un utilisateur veut modifier son mot de passe ou que l'administrateur crée un compte utilisateur, il n'y a aucun critère obligatoire, donc il est possible de configurer des mots de passe très simples et facilement devinables. \\
         
-        Pour contrer cela, on peut demander de respecter des conditions pour que le mot de passe soit fort. Les conditions peuvent être: minimum de 8 caractères, d'un nombre, d'un caractère spécial. On peut également générer un mot de passe aléatoire fort (avec 18 caractères alphanumériques) lorsque l'administrateur crée un compte pour un collaborateur et le mot de passe lui serait communiqué de manière sécurisée par la suite.
+        Pour contrer cela, on peut demander de respecter des conditions pour que le mot de passe soit fort. Les conditions peuvent être: minimum de 8 caractères, d'un nombre, d'un caractère spécial et d'une majuscule. On peut également générer un mot de passe aléatoire fort (avec 18 caractères alphanumériques) lorsque l'administrateur crée un compte pour un collaborateur et le mot de passe lui serait communiqué de manière sécurisée par la suite.
         \addcontentsline{toc}{subsection}{Scénario de menace 2: Vol de base de données (injection SQL)}
     \subsection*{Scénario de menace 2: Vol de base de données (injection SQL)}
         \paragraph{Impact sur l'entreprise} Haut
@@ -522,7 +522,7 @@ Nous n'avons pas modifié les entrées utilisateurs pour deux raisons :
 
 La solution définie est que lors de chaque visite d'une page contenant un formulaire, un token CSRF sera géré du côté du serveur, envoyée au client, puis pour finir inclus et caché dans le formulaire que l'utilisateur peut envoyer. Si cet utilisateur envoie ce formulaire, alors le token sera lui-même inclus et sera vérifié lors de la vérification des données reçues par le serveur. \\
 
-Le token est généré lors de chaque visite sur un formulaire, afin que lors de chaque envoie de formulaire, afin que le token précédent ne soit plus valide.
+Le token est généré lors de chaque visite sur un formulaire, afin qu'à chaque fois que l'utilisateur envoie le formulaire, le token précédent ne soit plus valide.
 \addcontentsline{toc}{section}{Conclusion}
 \section*{Conclusion}
 Pour conclure, ce rapport a permis premièrement de faire une analyse de ce qui existait déjà et d'identifier les menaces potentielles du système actuel. Nous avons par la suite établi quelques scénarios d'attaque possibles et finalement nous avons décrit les contre-mesures effectuées afin de sécuriser l'application. \\
